@@ -20,8 +20,10 @@ class EntryViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     lazy var items : [String] = [
         "Empty",
+        "30 Preloaded Messages",
         "50 Preloaded Messages",
-        "200 Preloaded Messages"
+        "250 Preloaded Messages",
+        "500 Preloaded Messages"
     ]
     
     override func viewDidLoad() {
@@ -50,11 +52,18 @@ class EntryViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let exampleViewController = ExampleMessengerViewController()
+        
         if indexPath.row == 1 {
             exampleViewController.bootstrapWithRandomMessages = 50
         }
         if indexPath.row == 2 {
-            exampleViewController.bootstrapWithRandomMessages = 200
+            exampleViewController.bootstrapWithRandomMessages = 50
+        }
+        if indexPath.row == 3 {
+            exampleViewController.bootstrapWithRandomMessages = 250
+        }
+        if indexPath.row == 4 {
+            exampleViewController.bootstrapWithRandomMessages = 500
         }
         navigationController?.pushViewController(exampleViewController, animated: true)
     }
