@@ -10,7 +10,6 @@
 		0A5B9A49BEABDE0CCC11D35C /* Pods_MessageGroups.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38AECA0C6C974586CB50DEA4 /* Pods_MessageGroups.framework */; };
 		197D8B0F1D64BA50004630AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197D8B0E1D64BA50004630AE /* AppDelegate.swift */; };
 		197D8B111D64BA50004630AE /* ExampleMessengerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197D8B101D64BA50004630AE /* ExampleMessengerViewController.swift */; };
-		197D8B141D64BA50004630AE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 197D8B121D64BA50004630AE /* Main.storyboard */; };
 		197D8B161D64BA50004630AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 197D8B151D64BA50004630AE /* Assets.xcassets */; };
 		197D8B241D64BA51004630AE /* MessageGroupsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197D8B231D64BA51004630AE /* MessageGroupsTests.swift */; };
 		197D8B2F1D64BA51004630AE /* MessageGroupsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197D8B2E1D64BA51004630AE /* MessageGroupsUITests.swift */; };
@@ -41,7 +40,6 @@
 		197D8B0B1D64BA50004630AE /* MessageGroups.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MessageGroups.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		197D8B0E1D64BA50004630AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		197D8B101D64BA50004630AE /* ExampleMessengerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleMessengerViewController.swift; sourceTree = "<group>"; };
-		197D8B131D64BA50004630AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		197D8B151D64BA50004630AE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		197D8B1A1D64BA50004630AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		197D8B1F1D64BA51004630AE /* MessageGroupsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MessageGroupsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,7 +114,6 @@
 			children = (
 				197D8B0E1D64BA50004630AE /* AppDelegate.swift */,
 				197D8B101D64BA50004630AE /* ExampleMessengerViewController.swift */,
-				197D8B121D64BA50004630AE /* Main.storyboard */,
 				197D8B151D64BA50004630AE /* Assets.xcassets */,
 				197D8B1A1D64BA50004630AE /* Info.plist */,
 				5072099A1DE329A000CD51A5 /* EntryViewController.swift */,
@@ -242,8 +239,9 @@
 				TargetAttributes = {
 					197D8B0A1D64BA50004630AE = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = G47H383S4Y;
 						LastSwiftMigration = 0800;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 					197D8B1E1D64BA51004630AE = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -283,7 +281,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				197D8B161D64BA50004630AE /* Assets.xcassets in Resources */,
-				197D8B141D64BA50004630AE /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,17 +480,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		197D8B121D64BA50004630AE /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				197D8B131D64BA50004630AE /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		197D8B311D64BA51004630AE /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -592,11 +578,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = G47H383S4Y;
 				INFOPLIST_FILE = MessageGroups/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ebay.MessageGroups;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -608,11 +595,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = G47H383S4Y;
 				INFOPLIST_FILE = MessageGroups/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ebay.MessageGroups;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
