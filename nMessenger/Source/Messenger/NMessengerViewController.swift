@@ -192,38 +192,67 @@ open class NMessengerViewController: UIViewController, UITextViewDelegate, NMess
     /**
      Moves InputBarView up and down accoridng to the location of the keyboard
      */
-    func keyboardNotification(_ notification: Notification) {
-        if let userInfo = (notification as NSNotification).userInfo {
+    func keyboardNotification(_ notification: Notification)
+    {
+        if let userInfo = (notification as NSNotification).userInfo
+        {
             let endFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
             let duration:TimeInterval = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
             let animationCurveRawNSN = userInfo[UIKeyboardAnimationCurveUserInfoKey] as? NSNumber
             let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIViewAnimationOptions().rawValue
             let animationCurve:UIViewAnimationOptions = UIViewAnimationOptions(rawValue: animationCurveRaw)
-            if endFrame?.origin.y >= UIScreen.main.bounds.size.height {
+            
+            
+            let newKeyboardLocation = endFrame
+            let keyboardHeight = newKeyboardLocation?.size.height ?? 0
+            let inputBarHeight = inputBarView.frame.height
+            
+            let tabBarHeight = self.tabBarController?.tabBar.frame.size.height ?? 0
+            
+            let isKeyboardOffScreen =
+                (newKeyboardLocation?.origin.y >= UIScreen.main.bounds.size.height)
+            
+            let inputViewShiftOffsetY = keyboardHeight - tabBarHeight
+            
+            if (isKeyboardOffScreen)
+            {
                 self.inputBarBottomSpacing.constant = 0
+                /*let bottomInset*/ _ = inputBarView.frame.height
                 self.isKeyboardIsShown = false
-            } else {
-                if self.inputBarBottomSpacing.constant==0{
-                    self.inputBarBottomSpacing.constant -= endFrame?.size.height ?? 0.0
+            }
+            else
+            {
+                let isInputBarHasNoBottomSpacing = (self.inputBarBottomSpacing.constant == 0)
+                
+                if (isInputBarHasNoBottomSpacing)
+                {
+                    self.inputBarBottomSpacing.constant -= inputViewShiftOffsetY
+                    /*let bottomInset*/ _ = inputViewShiftOffsetY + inputBarHeight
                 }
                 else
                 {
                     self.inputBarBottomSpacing.constant = 0
-                    self.inputBarBottomSpacing.constant -= endFrame?.size.height ?? 0.0
+                    self.inputBarBottomSpacing.constant -= inputViewShiftOffsetY
+                    /*let bottomInset*/ _ = inputViewShiftOffsetY + inputBarHeight
                 }
                 self.isKeyboardIsShown = true
             }
             
-            UIView.animate(withDuration: duration,
-                           delay: TimeInterval(0),
-                           options: animationCurve,
-                           animations: { self.view.layoutIfNeeded()
-                            if self.isKeyboardIsShown {
-                                self.messengerView.scrollToLastMessage(animated: true)
-                            }
-            },
-                           completion: nil)
+            let animationsBlock: () -> Swift.Void =
+            {
+                self.view.layoutIfNeeded()
+                if self.isKeyboardIsShown
+                {
+                    self.messengerView.scrollToLastMessage(animated: true)
+                }
+            }
             
+            let noDelay: TimeInterval = 0
+            UIView.animate(withDuration: duration,
+                           delay: noDelay,
+                           options: animationCurve,
+                           animations: animationsBlock,
+                           completion: nil)
         }
     }
     
