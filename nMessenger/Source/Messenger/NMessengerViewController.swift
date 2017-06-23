@@ -35,7 +35,7 @@ fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 }
 
 
-open class NMessengerViewController: UIViewController, UITextViewDelegate, NMessengerDelegate, UIGestureRecognizerDelegate {
+open class NMessengerViewController: UIViewController {
     
     //MARK: Views
     //This is messenger view
@@ -114,7 +114,6 @@ open class NMessengerViewController: UIViewController, UITextViewDelegate, NMess
      */
     override open func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.white
         //load views
         loadMessengerView()
         loadInputView()
@@ -153,7 +152,9 @@ open class NMessengerViewController: UIViewController, UITextViewDelegate, NMess
      */
     open func getInputBar() -> InputBarView
     {
-        return NMessengerBarView(controller: self)
+        let bar = NMessengerBarView(controller: self)
+        bar.inputBarDelegate = self
+        return bar
     }
     /**
      Adds auto layout constraints for NMessenger and InputBarView
@@ -579,4 +580,41 @@ open class NMessengerViewController: UIViewController, UITextViewDelegate, NMess
         return newMessage
     }
     
+}
+
+extension NMessengerViewController: NMessengerDelegate {
+    
+}
+
+extension NMessengerViewController: InputBarViewDelegate {
+    /**
+     Should define behavior when attach button is tapped
+     */
+    open func onAttach() {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(
+            title: "Take photo",
+            style: UIAlertActionStyle.default,
+            handler: { _ in  }))
+        
+        actionSheet.addAction(UIAlertAction(
+            title: "Upload from gallery",
+            style: UIAlertActionStyle.default,
+            handler: { _ in }))
+        
+        actionSheet.addAction(UIAlertAction(
+            title: "Cancel",
+            style: .cancel,
+            handler: { _ in }))
+        
+        self.present(actionSheet, animated: true, completion: nil)
+    }
+    
+    /**
+     Should define behavior when send button is tapped
+     */
+    open func onSendText(_ text: String) {
+        _ = self.sendText(text,isIncomingMessage: false)
+    }
 }

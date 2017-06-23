@@ -11,35 +11,62 @@
 import UIKit
 import AVFoundation
 import Photos
+import PureLayout
 
 //MARK: InputBarView
+/**
+ InputBarViewDelegate protocol for NMessenger.
+ Defines methods to be implemented inorder to use the InputBar
+ */
+public protocol InputBarViewDelegate : class {
+    /**
+     Should define behavior when attach button is tapped
+     */
+    func onAttach()
+    
+    /**
+     Should define behavior when send button is tapped
+     */
+    func onSendText(_ text: String)
+}
+
 /**
  InputBarView class for NMessenger.
  Define the input bar for NMessenger. This is where the user would type text and open the camera or photo library.
  */
-open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelegate {
-    
-    //MARK: IBOutlets
-    //@IBOutlet for InputBarView
-    @IBOutlet open weak var inputBarView: UIView!
-    //@IBOutlet for send button
-    @IBOutlet open weak var sendButton: UIButton!
-    //@IBOutlets NSLayoutConstraint input area view height
-    @IBOutlet open weak var textInputAreaViewHeight: NSLayoutConstraint!
-    //@IBOutlets NSLayoutConstraint input view height
-    @IBOutlet open weak var textInputViewHeight: NSLayoutConstraint!
+open class NMessengerBarView: InputBarView, UITextViewDelegate {
     
     //MARK: Public Parameters
-    //Reference to CameraViewController
-    open lazy var cameraVC: CameraViewController = CameraViewController()
+    //InputBarViewDelegate that implemets the delegate methods
+    open weak var inputBarDelegate: InputBarViewDelegate?
+    
+    //Container for all views
+    open var inputBarView = UIView()
+    
+    //Left View providing integration flexibility to change the left input bar buttons
+    open var leftView: UIView = UIView(forAutoLayout: ())
+    
+    //RightView providing integration flexibility to change the right input bar buttons
+    open var rightView: UIView = UIView(forAutoLayout: ())
+    
+    //Providing access to send button, to allow integrator to remove it and add custom right view buttons
+    open var sendButton: UIButton = UIButton()
+    
+    //Providing access to attach button, to allow integrator to remove it and add custom left view buttons
+    open var attachButton: UIButton = UIButton(type: .contactAdd)
+    
+    open var textInputAreaViewHeight: NSLayoutConstraint = NSLayoutConstraint()
+    
+    open var textInputViewHeight: NSLayoutConstraint = NSLayoutConstraint()
+    
     //CGFloat to the fine the number of rows a user can type
     open var numberOfRows:CGFloat = 3
     //String as placeholder text in input view
     open var inputTextViewPlaceholder: String = "NMessenger"
-    {
+        {
         willSet(newVal)
         {
-            self.textInputView.text = newVal
+            textInputView.text = newVal
         }
     }
     
@@ -62,7 +89,7 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
      */
     public required init(controller:NMessengerViewController) {
         super.init(controller: controller)
-        loadFromBundle()
+        load()
     }
     /**
      Initialiser the view.
@@ -72,7 +99,7 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
      */
     public required init(controller:NMessengerViewController,frame: CGRect) {
         super.init(controller: controller,frame: frame)
-        loadFromBundle()
+        load()
     }
     /**
      - parameter aDecoder: Must be NSCoder
@@ -80,21 +107,74 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
      */
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        loadFromBundle()
+        load()
     }
     
     // MARK: Initialiser helper methods
     /**
-     Loads the view from nib file InputBarView and does intial setup.
+     Loads the view constraints and does intial setup.
      */
-    fileprivate func loadFromBundle() {
-        _ = Bundle(for: NMessengerViewController.self).loadNibNamed("NMessengerBarView", owner: self, options: nil)?[0] as! UIView
-        self.addSubview(inputBarView)
-        inputBarView.frame = self.bounds
+    fileprivate func load() {
+        
+        inputBarView.backgroundColor = UIColor.n1LighterGreyColor()
+        
+        addSubview(inputBarView)
+        inputBarView.frame = bounds
+        
+        inputBarView.addSubview(textInputAreaView)
+        
+        rightView.backgroundColor = UIColor.white
+        leftView.backgroundColor = UIColor.white
+        
+        textInputAreaView.addSubview(rightView)
+        textInputAreaView.addSubview(leftView)
+        
+        sendButton.setTitle("Send", for: UIControlState.normal)
+        sendButton.setTitleColor(UIColor.blue, for: .normal)
+        sendButton.setTitleColor(UIColor.gray, for: .disabled)
+        sendButton.backgroundColor = UIColor.white
+        sendButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        sendButton.addTarget(self, action: #selector(sendButtonClicked), for: .touchUpInside)
+        
+        rightView.addSubview(sendButton)
+        
+        attachButton.backgroundColor = UIColor.white
+        attachButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        attachButton.addTarget(self, action: #selector(onAttach), for: .touchUpInside)
+        
+        leftView.addSubview(attachButton)
+        
         textInputView.delegate = self
-        self.sendButton.isEnabled = false
-        cameraVC.cameraDelegate = self
-
+        textInputAreaView.addSubview(textInputView)
+        
+        sendButton.isEnabled = false
+        addInputSelectorPlaceholder()
+    }
+    
+    open override func updateConstraints() {
+        super.updateConstraints()
+        inputBarView.autoSetDimension(.height, toSize: 43)
+        
+        inputBarView.autoPinEdgesToSuperviewEdges()
+        
+        textInputAreaView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5))
+        
+        rightView.autoPinEdge(toSuperviewEdge: .top)
+        rightView.autoPinEdge(toSuperviewEdge: .bottom)
+        rightView.autoPinEdge(toSuperviewEdge: .right)
+        
+        sendButton.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+        
+        leftView.autoPinEdge(toSuperviewEdge: .top)
+        leftView.autoPinEdge(toSuperviewEdge: .bottom)
+        leftView.autoPinEdge(toSuperviewEdge: .left)
+        
+        attachButton.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+        
+        textInputView.autoPinEdge(toSuperviewEdge: .top)
+        textInputView.autoPinEdge(toSuperviewEdge: .bottom)
+        textInputView.autoPinEdge(.left, to: .right, of: leftView)
+        textInputView.autoPinEdge(.right, to: .left, of: rightView)
     }
     
     //MARK: TextView delegate methods
@@ -123,43 +203,46 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
         }
         
         textView.textColor = UIColor.n1DarkestGreyColor()
+        UIView.animate(withDuration: 0.1, animations: {
+            self.sendButton.isEnabled = true
+        })
+        DispatchQueue.main.async(execute: {
+            textView.selectedRange = NSMakeRange(0, 0)
+        });
         return true
     }
     /**
      Implementing textViewShouldEndEditing in order to re-add placeholder and hiding send button when lost focus
-    */
+     */
     open func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
-        
-        if self.textInputView.text.isEmpty {
-            
-            self.addInputSelectorPlaceholder()
-            UIView.animate(withDuration: 0.1, animations: {
-                self.sendButton.isEnabled = false
-            })
+        if textInputView.text.isEmpty {
+            addInputSelectorPlaceholder()
         }
-        
-        self.textInputView.resignFirstResponder()
+        UIView.animate(withDuration: 0.1, animations: {
+            self.sendButton.isEnabled = false
+        })
+        textInputView.resignFirstResponder()
         return true
     }
     /**
      Implementing shouldChangeTextInRange in order to remove placeholder when user starts typing and to show send button
      Re-sizing the text area to default values when the return button is tapped
      Limit the amount of rows a user can write to the value of numberOfRows
-    */
+     */
     open func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if textView.text == "" && (text != "\n")
         {
             UIView.animate(withDuration: 0.1, animations: {
                 self.sendButton.isEnabled = true
-            }) 
+            })
             return true
         }
         else if (text == "\n") && textView.text != ""{
-            if textView == self.textInputView {
+            if textView == textInputView {
                 textInputViewHeight.constant = textInputViewHeightConst
                 textInputAreaViewHeight.constant = textInputViewHeightConst+10
-                _ = self.controller.sendText(self.textInputView.text,isIncomingMessage: false)
-                self.textInputView.text = ""
+                inputBarDelegate?.onSendText(textInputView.text)
+                textInputView.text = ""
                 return false
             }
         }
@@ -194,11 +277,6 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
         textInputViewHeight.constant = newFrame.size.height
         
         textInputAreaViewHeight.constant = newFrame.size.height+10
-        
-        if(textView.text.isEmpty){
-            self.sendButton.isEnabled = false;
-        }
-        
     }
     
     //MARK: TextView helper methods
@@ -206,96 +284,28 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
      Adds placeholder text and change the color of textInputView
      */
     fileprivate func addInputSelectorPlaceholder() {
-        self.textInputView.text = self.inputTextViewPlaceholder
-        self.textInputView.textColor = UIColor.lightGray
+        textInputView.text = inputTextViewPlaceholder
+        textInputView.textColor = UIColor.lightGray
     }
     
-    //MARK: @IBAction selectors
+    //MARK: selectors
     /**
      Send button selector
      Sends the text in textInputView to the controller
      */
-    @IBAction open func sendButtonClicked(_ sender: AnyObject) {
+    open func sendButtonClicked() {
         textInputViewHeight.constant = textInputViewHeightConst
         textInputAreaViewHeight.constant = textInputViewHeightConst+10
-        if self.textInputView.text != ""
+        if textInputView.text != ""
         {
-            _ = self.controller.sendText(self.textInputView.text,isIncomingMessage: false)
-            self.textInputView.text = ""
-        }
-        sendButton.isEnabled = false;
-    }
-    /**
-     Plus button selector
-     Requests camera and photo library permission if needed
-     Open camera and/or photo library to take/select a photo
-     */
-    @IBAction open func plusClicked(_ sender: AnyObject?) {
-        let authStatus = cameraVC.cameraAuthStatus
-        let photoLibAuthStatus = cameraVC.photoLibAuthStatus
-        if(authStatus != AVAuthorizationStatus.authorized) {
-            cameraVC.isCameraPermissionGranted({(granted) in
-                if(granted) {
-                    self.cameraVC.cameraAuthStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
-                    DispatchQueue.main.async(execute: { () -> Void in
-                        self.controller.present(self.cameraVC, animated: true, completion: nil)
-                    })
-                }
-                else
-                {
-                    self.cameraVC.cameraAuthStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
-                    if(photoLibAuthStatus != PHAuthorizationStatus.authorized) {
-                        self.cameraVC.requestPhotoLibraryPermissions({ (granted) in
-                            if(granted) {
-                                self.cameraVC.photoLibAuthStatus = PHPhotoLibrary.authorizationStatus()
-                                DispatchQueue.main.async(execute: { () -> Void in
-                                    self.controller.present(self.cameraVC, animated: true, completion:
-                                        {
-                                            ModalAlertUtilities.postGoToSettingToEnableCameraModal(fromController: self.cameraVC)
-                                    })
-                                })
-                                
-                            }
-                            else
-                            {
-                                self.cameraVC.photoLibAuthStatus = PHPhotoLibrary.authorizationStatus()
-                                ModalAlertUtilities.postGoToSettingToEnableCameraAndLibraryModal(fromController: self.controller)
-                            }
-                        })
-                    }
-                    else
-                    {
-                        DispatchQueue.main.async(execute: { () -> Void in
-                            self.controller.present(self.cameraVC, animated: true, completion: nil)
-                        })
-                    }
-                }
-            })
-        } else {//also check if photo gallery permissions are granted
-            self.cameraVC.cameraAuthStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
-            DispatchQueue.main.async(execute: { () -> Void in
-                self.controller.present(self.cameraVC, animated: true, completion: nil)
-            })
+            inputBarDelegate?.onSendText(textInputView.text)
+            textInputView.text = ""
         }
     }
-    
-    
-    //MARK: CameraView delegate methods
     /**
-     Implemetning CameraView delegate method
-     Close the CameraView and sends the image to the controller
+     attachment button selector
      */
-    open func pickedImage(_ image: UIImage!) {
-        self.cameraVC.dismiss(animated: true, completion: nil)
-        
-        _ = self.controller.sendImage(image,isIncomingMessage: false)
+    open func onAttach() {
+        inputBarDelegate?.onAttach()
     }
-    /**
-     Implemetning CameraView delegate method
-     Close the CameraView
-     */
-    open func cameraCancelSelection() {
-        cameraVC.dismiss(animated: true, completion: nil)
-    }
-
 }

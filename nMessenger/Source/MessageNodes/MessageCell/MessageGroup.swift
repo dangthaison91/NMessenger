@@ -19,10 +19,16 @@ open class MessageGroup: GeneralMessengerCell {
     
     /** Used for current state of new/old messages*/
     public enum MessageGroupState {
-        case added(index: IndexPath)
+        case added(indexes: [IndexPath])
         case removed
         case replaced
         case none
+    }
+    
+    /** Used for current state of avatar display position, on first or last message */
+    public enum PrimaryBubblePosition {
+        case first
+        case last
     }
     
     // MARK: Public Variables
@@ -37,6 +43,8 @@ open class MessageGroup: GeneralMessengerCell {
     open var animationDelay: TimeInterval = 0
     /** Avatar new message animation speed */
     open var avatarAnimationSpeed: TimeInterval = 0.15
+    /** Avatar display position*/
+    open var primaryBubblePosition: PrimaryBubblePosition = .first
     
     /**
      Spacing around the avatar
@@ -179,7 +187,7 @@ open class MessageGroup: GeneralMessengerCell {
     override open func animateLayoutTransition(_ context: ASContextTransitioning) {
         if let state = self.state {
             switch(state) {
-            case .added(let indexPath):
+            case .added(let indexPaths):
                 if let _ = self.avatarNode {
                     self.avatarNode?.frame = context.initialFrame(for: self.avatarNode!)
                 }
@@ -206,7 +214,7 @@ open class MessageGroup: GeneralMessengerCell {
                     let time: DispatchTime = DispatchTime.now() + Double(Int64(self.tableviewAnimationDelay)*1000 * Int64(NSEC_PER_MSEC)) / Double(NSEC_PER_SEC)
                     DispatchQueue.main.asyncAfter(deadline: time) {
                         self.messageTable.performBatch(animated: true, updates: {
-                            self.messageTable.insertRows(at: [indexPath], with: .fade)
+                            self.messageTable.insertRows(at: indexPaths, with: .fade)
                         }, completion: { (finished) in
                         })
                     }
@@ -289,13 +297,56 @@ open class MessageGroup: GeneralMessengerCell {
         if self.hasLaidOut {
             let indexPath = IndexPath(row: self.messages.count, section:0)
             //set state
-            self.state = .added(index: indexPath)
+            self.state = .added(indexes: [indexPath])
             //update table DS
             self.messages.append(message)
             //transition avatar + tableview cells
             self.transitionLayout(withAnimation: true, shouldMeasureAsync: false, measurementCompletion: nil)
         } else {
             self.messages.append(message)
+        }
+    }
+    
+    /**
+     Add a message to this group
+     - parameter message: the message to add
+     - parameter index: an index at which to start adding messages
+     - parameter layoutCompletionBlock: The block to be called once the new node has been added
+     */
+    open func addMessageToGroup(_ message: GeneralMessengerCell, atIndex index: Int, completion: (()->Void)?) {
+        self.updateMessage(message)
+        self.layoutCompletionBlock = completion
+        
+        //if the component is already on the screen
+        if self.hasLaidOut {
+            let indexPath = IndexPath(row: index, section:0)
+            //set state
+            self.state = .added(indexes: [indexPath])
+            //update table DS
+            self.messages.insert(message, at: index)
+            //transition avatar + tableview cells
+            self.transitionLayout(withAnimation: true, shouldMeasureAsync: false, measurementCompletion: nil)
+        } else {
+            self.messages.insert(message, at: index)
+        }
+    }
+    
+    open func addMessagesToGroup(_ inserts: [(GeneralMessengerCell, Int)], completion: (() -> Void)?) {
+        if let insert = inserts.first {
+            self.updateMessage(insert.0)
+        }
+        self.layoutCompletionBlock = completion
+        
+        if self.hasLaidOut {
+            // set state
+            let indexes = inserts.map { IndexPath(row: $0.1, section: 0) }
+            self.state = .added(indexes: indexes)
+            // update table DS
+            for insert in inserts {
+                self.messages.insert(insert.0, at: insert.1)
+            }
+            // transition avatar + tableview cells
+            self.transitionLayout(withAnimation: true, shouldMeasureAsync: false, measurementCompletion: nil)
         }
     }
     
@@ -394,23 +445,62 @@ open class MessageGroup: GeneralMessengerCell {
     fileprivate func updateMessage(_ message: GeneralMessengerCell) {
         message.currentTableNode = self.messageTable
         
-        //message specific UI
-        if messages.first == nil { //will be the first message
-            message.cellPadding = UIEdgeInsets.zero
-            if let message = message as? MessageNode {
-                message.contentNode?.backgroundBubble = message.contentNode?.bubbleConfiguration.getBubble()
-                message.isIncomingMessage = self.isIncomingMessage
-                //set the offset to 0 to prevent spacing issues
-                message.messageOffset = 0
+        switch primaryBubblePosition {
+        case .first:
+            //message specific UI
+            if  messages.first == nil {
+                message.cellPadding = UIEdgeInsets.zero
+                if let message = message as? MessageNode {
+                    message.contentNode?.backgroundBubble = message.contentNode?.bubbleConfiguration.getBubble()
+                    message.isIncomingMessage = self.isIncomingMessage
+                    //set the offset to 0 to prevent spacing issues
+                    message.messageOffset = 0
+                }
+            } else {
+                message.cellPadding = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
+                if let message = message as? MessageNode {
+                    message.contentNode?.backgroundBubble = message.contentNode?.bubbleConfiguration.getSecondaryBubble()
+                    message.isIncomingMessage = self.isIncomingMessage
+                    //set the offset to 0 to prevent spacing issues
+                    message.messageOffset = 0
+                }
             }
-        } else {
-            message.cellPadding = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
-            if let message = message as? MessageNode {
-                message.contentNode?.backgroundBubble = message.contentNode?.bubbleConfiguration.getSecondaryBubble()
-                message.isIncomingMessage = self.isIncomingMessage
-                //set the offset to 0 to prevent spacing issues
-                message.messageOffset = 0
+            break
+        case .last:
+            if !messages.isEmpty {
+                let lastIndex = messages.count - 1
+                let oldMessage = self.messages[lastIndex]
+                //set state
+                self.state = .replaced
+                if let message = oldMessage as? MessageNode {
+                    let isIncoming = message.isIncomingMessage
+                    message.contentNode?.backgroundBubble = message.contentNode?.bubbleConfiguration.getSecondaryBubble()
+                    message.isIncomingMessage = isIncoming
+                    //set the offset to 0 to prevent spacing issues
+                    message.messageOffset = 0
+                }
+                
+                self.messageTable.reloadRows(at: [IndexPath(row: lastIndex, section: 0) ], with: .fade)
+                
+                message.cellPadding = UIEdgeInsets.zero
+                if let message = message as? MessageNode {
+                    message.contentNode?.backgroundBubble = message.contentNode?.bubbleConfiguration.getBubble()
+                    message.isIncomingMessage = self.isIncomingMessage
+                    //set the offset to 0 to prevent spacing issues
+                    message.messageOffset = 0
+                }
+                
+            } else {
+                message.cellPadding = UIEdgeInsets.zero
+                if let message = message as? MessageNode {
+                    message.contentNode?.backgroundBubble = message.contentNode?.bubbleConfiguration.getBubble()
+                    message.isIncomingMessage = self.isIncomingMessage
+                    //set the offset to 0 to prevent spacing issues
+                    message.messageOffset = 0
+                }
             }
+            
+            break
         }
     }
     

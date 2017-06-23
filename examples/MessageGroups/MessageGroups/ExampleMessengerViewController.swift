@@ -63,6 +63,7 @@ class ExampleMessengerViewController: NMessengerViewController {
         self.messengerView.addMessages(messageGroups, scrollsToMessage: false)
         self.messengerView.scrollToLastMessage(animated: false)
         self.lastMessageGroup = messageGroups.last
+        self.inputBarView.textInputView.font = UIFont.systemFont(ofSize: 16)
         //END BOOTSTRAPPING OF MESSAGES
         
         automaticallyAdjustsScrollViewInsets = false
@@ -85,6 +86,7 @@ class ExampleMessengerViewController: NMessengerViewController {
         
         return newMessage
     }
+    
     
     //MARK: Helper Functions
     /**

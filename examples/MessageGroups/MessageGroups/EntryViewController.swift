@@ -54,7 +54,7 @@ class EntryViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let exampleViewController = ExampleMessengerViewController()
         
         if indexPath.row == 1 {
-            exampleViewController.bootstrapWithRandomMessages = 50
+            exampleViewController.bootstrapWithRandomMessages = 30
         }
         if indexPath.row == 2 {
             exampleViewController.bootstrapWithRandomMessages = 50

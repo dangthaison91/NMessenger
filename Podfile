@@ -7,6 +7,7 @@ target 'nMessenger' do
 
   # Pods for nMessenger
   pod 'Texture', '2.3.2'
+  pod 'PureLayout'
 
   target 'nMessengerTests' do
     inherit! :search_paths

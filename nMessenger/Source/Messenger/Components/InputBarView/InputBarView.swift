@@ -17,11 +17,8 @@ import UIKit
  */
 open class InputBarView: UIView, InputBarViewProtocol {
     
-    //MARK: IBOutlets
-    //@IBOutlets for input area view
-    @IBOutlet open weak var textInputAreaView: UIView!
-    //@IBOutlets for input view
-    @IBOutlet open weak var textInputView: UITextView!
+    open var textInputAreaView: UIView = UIView()
+    open var textInputView: UITextView = UITextView()
     
     //MARK: Public Parameters
     

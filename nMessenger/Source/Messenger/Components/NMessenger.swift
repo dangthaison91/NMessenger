@@ -188,6 +188,22 @@ open class NMessenger: UIView {
             self.addMessages(messages, atIndex: self.state.itemCount, scrollsToMessage: scrollsToMessage, animation: animation, completion:  completion)
         }
     }
+    
+    /**
+     Adds an array of messages to the messenger.
+     - parameter messages: An array of messages
+     - parameter index: an index in the tableview at which to start adding messages
+     - parameter scrollsToMessage: If marked true, the tableview will scroll to the newly added
+     - parameter animation: An animation for newly added cell message
+     */
+
+    open func addMessages(_ messages: [GeneralMessengerCell], atIndex index: Int, scrollsToMessage: Bool, animation: UITableViewRowAnimation) {
+        self.waitForMessageLock {
+            self.addMessages(messages, atIndex: index, scrollsToMessage: scrollsToMessage, animation: animation, completion: nil)
+        }
+    }
+    
+    
     /**
      Adds batch fetched messages to the head of the messenger. This **MUST BE** called to end a batch fetch operation. (Fire and forget)
      If no data was received, use an empty array for messages. Calling this outside when a batch fetch has not
@@ -436,7 +452,7 @@ open class NMessenger: UIView {
      
      Adds messages at a particular index. Updates *currentTableNode*
      - parameter messages: An array of messages
-     -parameter index: an index in the tableview at which to start adding messages
+     - parameter index: an index in the tableview at which to start adding messages
      - parameter scrollsToMessage: If marked true, the tableview will scroll to the newly added
      message
      */

@@ -27,7 +27,6 @@
 		616280351D8197B700D1F510 /* InputBarViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13F39E01D650D490021A858 /* InputBarViewProtocol.swift */; };
 		616280361D8197BA00D1F510 /* InputBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14C8B681D66273700F8616F /* InputBarView.swift */; };
 		616280371D8197BE00D1F510 /* NMessengerBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87361D63813700F3C21C /* NMessengerBarView.swift */; };
-		616280381D8197CA00D1F510 /* NMessengerBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F1FC87371D63813700F3C21C /* NMessengerBarView.xib */; };
 		616280461D81A5E700D1F510 /* AsyncDisplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 616280451D81A5E700D1F510 /* AsyncDisplayKit.framework */; };
 		616280471D81A71500D1F510 /* BubbleConfigurationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87101D63813700F3C21C /* BubbleConfigurationProtocol.swift */; };
 		616280481D81A71500D1F510 /* ImageBubbleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87111D63813700F3C21C /* ImageBubbleConfiguration.swift */; };
@@ -356,7 +355,6 @@
 		F1FC87CC1D63813700F3C21C /* MessageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87311D63813700F3C21C /* MessageNode.swift */; };
 		F1FC87CD1D63813700F3C21C /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87341D63813700F3C21C /* CameraViewController.swift */; };
 		F1FC87CE1D63813700F3C21C /* NMessengerBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87361D63813700F3C21C /* NMessengerBarView.swift */; };
-		F1FC87CF1D63813700F3C21C /* NMessengerBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F1FC87371D63813700F3C21C /* NMessengerBarView.xib */; };
 		F1FC87D01D63813700F3C21C /* NMessenger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87381D63813700F3C21C /* NMessenger.swift */; };
 		F1FC87D11D63813700F3C21C /* NMessengerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC87391D63813700F3C21C /* NMessengerViewController.swift */; };
 		F1FC87D21D63813700F3C21C /* ModalAlertUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FC873B1D63813700F3C21C /* ModalAlertUtilities.swift */; };
@@ -581,7 +579,6 @@
 		F1FC87311D63813700F3C21C /* MessageNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageNode.swift; sourceTree = "<group>"; };
 		F1FC87341D63813700F3C21C /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		F1FC87361D63813700F3C21C /* NMessengerBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NMessengerBarView.swift; sourceTree = "<group>"; };
-		F1FC87371D63813700F3C21C /* NMessengerBarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NMessengerBarView.xib; sourceTree = "<group>"; };
 		F1FC87381D63813700F3C21C /* NMessenger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NMessenger.swift; sourceTree = "<group>"; };
 		F1FC87391D63813700F3C21C /* NMessengerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NMessengerViewController.swift; sourceTree = "<group>"; };
 		F1FC873B1D63813700F3C21C /* ModalAlertUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalAlertUtilities.swift; sourceTree = "<group>"; };
@@ -1101,7 +1098,6 @@
 				F13F39E01D650D490021A858 /* InputBarViewProtocol.swift */,
 				F14C8B681D66273700F8616F /* InputBarView.swift */,
 				F1FC87361D63813700F3C21C /* NMessengerBarView.swift */,
-				F1FC87371D63813700F3C21C /* NMessengerBarView.xib */,
 			);
 			path = InputBarView;
 			sourceTree = "<group>";
@@ -1399,7 +1395,6 @@
 				616280A51D81B81C00D1F510 /* loadBubble_0020_Layer-19@2x.png in Resources */,
 				616280BB1D81B82800D1F510 /* loadBubble_0003_Layer-36@3x.png in Resources */,
 				616280AD1D81B81C00D1F510 /* loadBubble_0028_Layer-11@2x.png in Resources */,
-				616280381D8197CA00D1F510 /* NMessengerBarView.xib in Resources */,
 				616280701D81B81400D1F510 /* loadBubble_0006_Layer-33@1x.png in Resources */,
 				616280881D81B81400D1F510 /* loadBubble_0030_Layer-9@1x.png in Resources */,
 			);
@@ -1427,7 +1422,6 @@
 				F1FC874D1D63813700F3C21C /* loadBubble_0012_Layer-27@1x.png in Resources */,
 				F1FC87A31D63813700F3C21C /* loadBubble_0020_Layer-19@3x.png in Resources */,
 				F1FC87701D63813700F3C21C /* loadBubble_0008_Layer-31@2x.png in Resources */,
-				F1FC87CF1D63813700F3C21C /* NMessengerBarView.xib in Resources */,
 				F1FC87431D63813700F3C21C /* loadBubble_0002_Layer-37@1x.png in Resources */,
 				F1FC87A01D63813700F3C21C /* loadBubble_0017_Layer-22@3x.png in Resources */,
 				F1FC87A61D63813700F3C21C /* loadBubble_0023_Layer-16@3x.png in Resources */,
