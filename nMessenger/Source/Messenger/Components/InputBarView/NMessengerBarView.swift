@@ -103,26 +103,41 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
      Implementing textViewShouldBeginEditing in order to set the text indictor at position 0
      */
     open func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        textView.text = ""
+        
+        
+        if(textView.text == inputTextViewPlaceholder){
+            textView.text = "";
+        }
+        
+        if !textView.text.isEmpty {
+            
+            UIView.animate(withDuration: 0.1, animations: {
+                self.sendButton.isEnabled = true
+            });
+            
+        }else{
+            
+            DispatchQueue.main.async(execute: {
+                textView.selectedRange = NSMakeRange(0, 0)
+            });
+        }
+        
         textView.textColor = UIColor.n1DarkestGreyColor()
-        UIView.animate(withDuration: 0.1, animations: {
-            self.sendButton.isEnabled = true
-        }) 
-        DispatchQueue.main.async(execute: {
-            textView.selectedRange = NSMakeRange(0, 0)
-        });
         return true
     }
     /**
      Implementing textViewShouldEndEditing in order to re-add placeholder and hiding send button when lost focus
     */
     open func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        
         if self.textInputView.text.isEmpty {
+            
             self.addInputSelectorPlaceholder()
+            UIView.animate(withDuration: 0.1, animations: {
+                self.sendButton.isEnabled = false
+            })
         }
-        UIView.animate(withDuration: 0.1, animations: {
-            self.sendButton.isEnabled = false
-        }) 
+        
         self.textInputView.resignFirstResponder()
         return true
     }
@@ -180,7 +195,9 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
         
         textInputAreaViewHeight.constant = newFrame.size.height+10
         
-        
+        if(textView.text.isEmpty){
+            self.sendButton.isEnabled = false;
+        }
         
     }
     
@@ -206,6 +223,7 @@ open class NMessengerBarView: InputBarView, UITextViewDelegate, CameraViewDelega
             _ = self.controller.sendText(self.textInputView.text,isIncomingMessage: false)
             self.textInputView.text = ""
         }
+        sendButton.isEnabled = false;
     }
     /**
      Plus button selector
