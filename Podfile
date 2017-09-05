@@ -6,7 +6,7 @@ target 'nMessenger' do
   use_frameworks!
 
   # Pods for nMessenger
-  pod 'Texture', '2.3.2'
+  pod 'Texture', '2.4'
   pod 'PureLayout'
 
   target 'nMessengerTests' do
