@@ -164,7 +164,7 @@ open class MessageNode: GeneralMessengerCell {
             avatarButtonSizeLayout.children = [self.avatarButtonNode]
             let avatarBackStack = ASBackgroundLayoutSpec(child: avatarButtonSizeLayout, background: avatarSizeLayout)
             
-            let width = constrainedSize.max.width - tmpSizeMeasure.size.width - self.cellPadding.left - self.cellPadding.right - avatarInsets.left - avatarInsets.right - self.messageOffset
+            let width = constrainedSize.max.width - self.cellPadding.left - self.cellPadding.right - avatarInsets.left - avatarInsets.right - self.messageOffset
 
             contentNode?.style.maxWidth = ASDimension(unit: .points, value: width * self.maxWidthRatio)
             contentNode?.style.maxHeight = ASDimension(unit: .points, value: self.maxHeight)
