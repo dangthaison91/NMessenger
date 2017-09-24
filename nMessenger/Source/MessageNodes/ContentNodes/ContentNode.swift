@@ -100,19 +100,19 @@ open class ContentNode: ASDisplayNode {
     /**
      Draws the content in the bubble. This is called on a background thread.
      */
-    open func drawRect(_ bounds: CGRect, withParameters parameters: NSObjectProtocol!,
-                  isCancelled isCancelledBlock: asdisplaynode_iscancelled_block_t, isRasterizing: Bool) {
-        self.isOpaque = false
-        if !isRasterizing {
-            self.calculateLayerPropertiesThatFit(bounds)
-            
-            //call the main queue
-            DispatchQueue.main.async {
-                self.layoutLayers()
-            }
-        }
+    open override class func draw(_ bounds: CGRect, withParameters parameters: Any?, isCancelled isCancelledBlock: () -> Bool, isRasterizing: Bool) {
+
+//        self.isOpaque = false
+//        if !isRasterizing {
+//            self.calculateLayerPropertiesThatFit(bounds)
+//
+//            //call the main queue
+//            DispatchQueue.main.async {
+//                self.layoutLayers()
+//            }
+//        }
     }
-    
+
     
     //MARK: Override AsycDisaplyKit helper methods
     
