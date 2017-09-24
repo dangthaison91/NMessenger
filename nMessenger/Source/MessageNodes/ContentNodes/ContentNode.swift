@@ -59,7 +59,7 @@ open class ContentNode: ASDisplayNode {
      */
     override open func didLoad() {
         super.didLoad()
-        self.addSublayers()
+        self.isOpaque = false
     }
     
     //MARK: Node Lifecycle helper methods
@@ -75,74 +75,36 @@ open class ContentNode: ASDisplayNode {
         self.setNeedsLayout()
     }
     
-    /**
-     Called during the initializer and makes sure layers are added on the main thread
-     */
-    open func addSublayers() {
-        if let backgroundBubble = self.backgroundBubble {
-            //make sure the layer is at the bottom of the node
-            backgroundBubble.layer.removeFromSuperlayer()
-            backgroundBubble.maskLayer.removeFromSuperlayer()
-            
-            self.layer.insertSublayer(backgroundBubble.layer, at: 0)
-            
-            //If there is a layer mask, add it
-            if backgroundBubble.hasLayerMask {
-                self.layer.insertSublayer(backgroundBubble.maskLayer, below: backgroundBubble.layer)
-                self.layer.mask = backgroundBubble.maskLayer
-            }
-        }
-    }
-
-    
     //MARK: Override AsycDisaplyKit Methods
     
     /**
      Draws the content in the bubble. This is called on a background thread.
      */
+
+    open override func drawParameters(forAsyncLayer layer: _ASDisplayLayer) -> NSObjectProtocol? {
+        guard let backgroundBubble = backgroundBubble else { return nil }
+        return ["bubble": backgroundBubble] as NSDictionary
+    }
+
     open override class func draw(_ bounds: CGRect, withParameters parameters: Any?, isCancelled isCancelledBlock: () -> Bool, isRasterizing: Bool) {
+        guard let parameters = parameters as? NSDictionary else { return }
+        guard let bubble = parameters["bubble"] as? Bubble else { return }
+        bubble.sizeToBounds(bounds)
+        bubble.createLayer()
 
-//        self.isOpaque = false
-//        if !isRasterizing {
-//            self.calculateLayerPropertiesThatFit(bounds)
-//
-//            //call the main queue
-//            DispatchQueue.main.async {
-//                self.layoutLayers()
-//            }
-//        }
+        let context = UIGraphicsGetCurrentContext()!
+        context.saveGState()
+        if let path = bubble.layer.path {
+            bubble.bubbleColor.setFill()
+            let bezierPath = UIBezierPath(cgPath: path)
+            bezierPath.fill()
+            context.clip(to: bezierPath.bounds)
+        }
+        context.setFillColor(UIColor.clear.cgColor)
+        context.restoreGState()
     }
 
-    
     //MARK: Override AsycDisaplyKit helper methods
-    
-    /**
-     Called through the draw rect function. This should be used to create a background layer off the main thread. This layer should be added in layout.
-     - parameter bounds: Must be CGRect
-     */
-    open func calculateLayerPropertiesThatFit(_ bounds: CGRect) {
-        if let backgroundBubble = self.backgroundBubble {
-             backgroundBubble.sizeToBounds(bounds)
-        }
-    }
-    
-    /**
-     Called on the main thread
-     */
-    open func layoutLayers() {
-        if let backgroundBubble = self.backgroundBubble {
-            backgroundBubble.createLayer()
-            
-            //TODO: this is slightly hacky, will need to rethink
-            if isIncomingMessage {
-                CATransaction.begin()
-                CATransaction.setDisableActions(true)
-                backgroundBubble.layer.transform = CATransform3DTranslate(CATransform3DMakeScale(-1, 1, 1), -backgroundBubble.calculatedBounds.width, 0, 0)
-                backgroundBubble.maskLayer.transform = CATransform3DTranslate(CATransform3DMakeScale(-1, 1, 1), -backgroundBubble.calculatedBounds.width, 0, 0)
-                CATransaction.commit()
-            }
-        }
-    }
     
     /**
      Calls closer after a time delay
