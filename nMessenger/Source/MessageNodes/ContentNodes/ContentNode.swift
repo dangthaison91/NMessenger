@@ -83,7 +83,7 @@ open class ContentNode: ASDisplayNode {
 
     open override func drawParameters(forAsyncLayer layer: _ASDisplayLayer) -> NSObjectProtocol? {
         guard let backgroundBubble = backgroundBubble else { return nil }
-        return ["bubble": backgroundBubble] as NSDictionary
+        return ["bubble": backgroundBubble, "isIncomingMessage": isIncomingMessage] as NSDictionary
     }
 
     open override class func draw(_ bounds: CGRect, withParameters parameters: Any?, isCancelled isCancelledBlock: () -> Bool, isRasterizing: Bool) {
@@ -93,14 +93,22 @@ open class ContentNode: ASDisplayNode {
         bubble.createLayer()
 
         let context = UIGraphicsGetCurrentContext()!
-        context.saveGState()
+        context.saveGState() 
+        context.setShadow(offset: CGSize(width: 0.0, height: 2.0), blur: 2.0, color: UIColor.gray.cgColor)
+
         if let path = bubble.layer.path {
             bubble.bubbleColor.setFill()
             let bezierPath = UIBezierPath(cgPath: path)
+            if let isIncomingMessage = parameters["isIncomingMessage"] as? Bool, !isIncomingMessage {
+                let mirror = CGAffineTransform(scaleX: -1.0, y: 1.0)
+                let translate = CGAffineTransform(translationX: bubble.calculatedBounds.width, y: 0)
+                bezierPath.apply(mirror)
+                bezierPath.apply(translate)
+            }
+
             bezierPath.fill()
             context.clip(to: bezierPath.bounds)
         }
-        context.setFillColor(UIColor.clear.cgColor)
         context.restoreGState()
     }
 
