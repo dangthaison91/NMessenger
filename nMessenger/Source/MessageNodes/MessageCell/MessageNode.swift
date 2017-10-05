@@ -11,6 +11,21 @@
 import UIKit
 import AsyncDisplayKit
 
+public enum AvatarPosition {
+    case top
+    case bottom
+
+    internal func mapToStackLayoutAlignment() -> ASStackLayoutAlignItems {
+        switch self {
+        case .top:
+            return .start
+
+        case .bottom:
+            return .end
+        }
+    }
+}
+
 //MARK: MessageNode
 /**
  Base message class for N Messenger. Extends GeneralMessengerCell. Holds one message
@@ -32,7 +47,12 @@ open class MessageNode: GeneralMessengerCell {
         didSet {
             self.setNeedsLayout()
         }
+    }
 
+    open var avatarPosition: AvatarPosition = .top {
+        didSet {
+            // self.setNeedsLayout()
+        }
     }
     
     /** ASDisplayNode as the header of the cell*/
@@ -177,7 +197,9 @@ open class MessageNode: GeneralMessengerCell {
             
             let cellOrientation = isIncomingMessage ? [ins, contentSizeLayout] : [contentSizeLayout,ins]
             
-            layoutSpecs = ASStackLayoutSpec(direction: .horizontal, spacing: 0, justifyContent: justifyLocation, alignItems: .end, children: cellOrientation)
+            let avatarAlignment = self.avatarPosition.mapToStackLayoutAlignment()
+
+            layoutSpecs = ASStackLayoutSpec(direction: .horizontal, spacing: 0, justifyContent: justifyLocation, alignItems: avatarAlignment, children: cellOrientation)
             contentSizeLayout.style.flexShrink = 1
         } else {
             let width = constrainedSize.max.width - self.cellPadding.left - self.cellPadding.right - self.messageOffset
