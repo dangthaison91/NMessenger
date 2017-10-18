@@ -50,11 +50,11 @@ open class TextContentNode: ContentNode,ASTextNodeDelegate {
         }
     }
     /** String to present as the content of the cell*/
-    open var textMessageString: NSAttributedString? {
+    open var textMessageString: String {
         get {
-            return self.textMessageNode.attributedText
+            return self.textMessageNode.attributedText?.string ?? ""
         } set {
-            self.textMessageNode.attributedText = newValue
+            self.setupTextNode(newValue)
         }
     }
     /** Overriding from super class
